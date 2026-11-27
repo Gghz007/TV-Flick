@@ -1,58 +1,37 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Terms of Service for the official TV Flick apps for Windows and Android.">
-  <title>Terms of Service | TV Flick</title>
-  <link rel="canonical" href="https://gghz007.github.io/TV-Flick/terms.html">
-  <style>
-    :root { color-scheme: light dark; }
-    * { box-sizing: border-box; }
-    body { background: Canvas; color: CanvasText; margin: 0; font: 1rem/1.65 system-ui, -apple-system, sans-serif; }
-    .wrap { width: min(100% - 2.5rem, 47rem); margin-inline: auto; }
-    header { border-bottom: 1px solid GrayText; }
-    nav { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; padding-block: .85rem; }
-    a { color: LinkText; text-underline-offset: .2em; overflow-wrap: anywhere; }
-    :focus-visible { outline: 2px solid currentColor; outline-offset: .24rem; }
-    main { padding-block: clamp(2rem, 5vw, 4rem); }
-    h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .25rem; letter-spacing: -.045em; }
-    h2 { font-size: 1.25rem; margin-block: 2rem .5rem; }
-    h1, h2 { line-height: 1.25; }
-    p { margin-block: .5rem 1rem; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root { color-scheme: light dark; }
+body { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; font: 1rem/1.65 system-ui, sans-serif; }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid GrayText; padding-bottom: 1rem; }
+a { color: LinkText; overflow-wrap: anywhere; }
+h1 { line-height: 1.15; margin-block: 2rem .25rem; }
+h2 { font-size: 1.25rem; margin-block: 2rem .25rem; }
+code { overflow-wrap: anywhere; }
+</style>
+<title>Terms of Service | TV Flick</title>
+<link rel="canonical" href="https://gghz007.github.io/TV-Flick/terms.html">
 </head>
 <body>
-  <header>
-    <nav class="wrap" aria-label="Main navigation">
-      <a href="index.html">TV Flick</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html" aria-current="page">Terms of Service</a>
-    </nav>
-  </header>
-  <main class="wrap">
-    <h1>Terms of Service</h1>
-    <p>Last updated <time datetime="2026-11-27">November 27, 2026</time></p>
-    <p>These terms apply to your use of the official TV Flick apps for Windows and Android and the TV Flick website. The TV Flick project is maintained under the GitHub account Gghz007.</p>
-
-    <h2>Using TV Flick</h2>
-    <p>TV Flick is a personal media library and watch tracker. You can use it to organize movies and series, record your viewing progress, and play media made available through compatible sources. The app does not host movies or series or grant you rights to access, download, or redistribute media.</p>
-    <p>Only connect sources and access, play, or download media that you are authorized to use. Follow applicable law and the relevant service terms. You are responsible for the sources you configure and the actions you take with them. TV Flick prohibits use of the official app to infringe another person’s rights.</p>
-
-    <h2>Third-party services</h2>
-    <p>External sources, TMDB metadata, YouTube trailers, GitHub, and external download apps are run by their respective providers. Their own terms and privacy policies apply to their services. Content, features, and availability can change. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
-
-    <h2>Google sign-in and backups</h2>
-    <p>Google sign-in is optional. If you connect your Google account, you can create and restore library backups in the app-specific folder in your Google Drive, subject to your Google account settings, available storage, and Google’s terms. Keep a local export if you need a separate copy. The <a href="privacy.html">TV Flick Privacy Policy</a> explains how to disconnect Google and remove the app’s data from Drive.</p>
-
-    <h2>Software and independent forks</h2>
-    <p>Any rights to copy, modify, or redistribute the source code are governed by the applicable license in the project repository. Independent forks, modified builds, and third-party plugins are the responsibility of their own distributors. They can have different terms, privacy practices, and security properties.</p>
-
-    <h2>Availability and limits</h2>
-    <p>To the extent permitted by applicable law, TV Flick is provided as available and without warranties of uninterrupted service, accuracy of third-party information, or preservation of backups. To the extent permitted by applicable law, the project maintainers are not liable for indirect or consequential losses from independent third-party services, unauthorized media use, or loss of data. These terms preserve your statutory consumer rights and any liability that cannot lawfully be limited.</p>
-
-    <h2>Contact and changes</h2>
-    <p>Contact the project through its <a href="https://github.com/Gghz007/TV-Flick/issues">public issue tracker</a> or use the TV Flick support email shown on the Google consent screen for confidential matters. An updated version of these terms will be posted here with its revision date.</p>
-  </main>
+<nav aria-label="Main navigation"><a href="index.html">TV Flick</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></nav>
+<main>
+<h1>Terms of Service</h1>
+<p>Last updated <time datetime="2026-11-27">November 27, 2026</time></p>
+<p>These terms apply to the official TV Flick apps for Windows and Android and this website, maintained under the GitHub account Gghz007.</p>
+<h2>Using TV Flick</h2>
+<p>TV Flick is a personal media tracker and player for compatible sources. It does not host or distribute movies and shows. Use only sources and media you are authorized to access, download, or share, and follow their service terms and applicable law. You are responsible for the sources you configure and the actions you take with them.</p>
+<h2>Third-party services and backups</h2>
+<p>TMDB, Google, YouTube, and configured sources and download apps are operated by their respective providers. Their terms and privacy practices apply to their services. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+<p>Google Drive backups are optional and subject to Google’s terms and account settings. Keep an independent local copy if you need one. See the <a href="privacy.html">Privacy Policy</a> for details about cloud backups and deletion.</p>
+<h2>Forks and software rights</h2>
+<p>Rights to copy, modify, or redistribute source code depend on the applicable repository license. Independent forks, modified builds, and plugins are the responsibility of their own maintainers and may have separate terms and privacy practices.</p>
+<h2>Availability and limits</h2>
+<p>To the extent permitted by law, TV Flick is provided as available without guarantees of uninterrupted service, third-party information accuracy, or backup preservation. To the extent permitted by law, maintainers are not liable for indirect or consequential losses resulting from independent services, unauthorized media use, or loss of data. These terms preserve statutory consumer rights and liability that cannot legally be limited.</p>
+<h2>Contact and updates</h2>
+<p>Use the <a href="https://github.com/Gghz007/TV-Flick/issues">project issue tracker</a> or the support email on the Google consent screen for private requests. Revised terms will be published on this page.</p>
+</main>
 </body>
 </html>

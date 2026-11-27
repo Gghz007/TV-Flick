@@ -1,0 +1,45 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Kotlin and IDEs
+*.class
+*.log
+.idea/
+.android-studio/
+*.iml
+out/
+
+# Android
+local.properties
+*.apk
+*.aab
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Secrets and local environment
+.env
+.env.*
+!*.example
+keystore.properties
+*.jks
+*.keystore
+google-oauth.json
+google-session.dat
+client_secret_*.json
+google-services.json
+*.p12
+*.pfx
+*.tvbackup
+
+# Local source investigation responses may contain temporary stream/session data.
+.work/
+
+# Portable user library (including SQLite WAL files).
+Local Database/
+.tvflick-local-database-*
+*.db
+*.db-wal
+*.db-shm
