@@ -1,0 +1,74 @@
+backupContent:
+SELECT * FROM content WHERE local_id IN (SELECT content_id FROM library_entry);
+
+restoreContent:
+INSERT INTO content(local_id, media_type, tmdb_id, title, original_title, release_year, poster_path, backdrop_path, overview, runtime_minutes, metadata_updated_at_epoch_ms, created_at_epoch_ms, updated_at_epoch_ms, release_date, alternative_titles, genres) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+clearBackupContent:
+DELETE FROM content;
+
+backupLibraryEntry:
+SELECT * FROM library_entry ;
+
+restoreLibraryEntry:
+INSERT INTO library_entry(content_id, is_in_watch_list, is_favorite, movie_watched_at_epoch_ms, movie_position_ms, added_at_epoch_ms, updated_at_epoch_ms) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+clearBackupLibraryEntry:
+DELETE FROM library_entry;
+
+backupShowSeason:
+SELECT * FROM show_season WHERE show_content_id IN (SELECT content_id FROM library_entry);
+
+restoreShowSeason:
+INSERT INTO show_season(local_id, show_content_id, tmdb_season_id, season_number, name, air_date, poster_path) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+clearBackupShowSeason:
+DELETE FROM show_season;
+
+backupEpisode:
+SELECT * FROM episode WHERE season_id IN (SELECT local_id FROM show_season WHERE show_content_id IN (SELECT content_id FROM library_entry));
+
+restoreEpisode:
+INSERT INTO episode(local_id, season_id, tmdb_episode_id, episode_number, name, overview, air_date, still_path, runtime_minutes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+clearBackupEpisode:
+DELETE FROM episode;
+
+backupEpisodeProgress:
+SELECT * FROM episode_progress WHERE episode_id IN (SELECT episode.local_id FROM episode JOIN show_season ON episode.season_id = show_season.local_id JOIN library_entry ON show_season.show_content_id = library_entry.content_id);
+
+restoreEpisodeProgress:
+INSERT INTO episode_progress(episode_id, watched_at_epoch_ms, position_ms, updated_at_epoch_ms) VALUES (?, ?, ?, ?);
+
+clearBackupEpisodeProgress:
+DELETE FROM episode_progress;
+
+backupEpisodeFavorite:
+SELECT * FROM episode_favorite WHERE episode_id IN (SELECT episode.local_id FROM episode JOIN show_season ON episode.season_id = show_season.local_id JOIN library_entry ON show_season.show_content_id = library_entry.content_id);
+
+restoreEpisodeFavorite:
+INSERT INTO episode_favorite(episode_id) VALUES (?);
+
+clearBackupEpisodeFavorite:
+DELETE FROM episode_favorite;
+
+backupVideoSourceSite:
+SELECT * FROM video_source_site ;
+
+restoreVideoSourceSite:
+INSERT INTO video_source_site(site_id, display_name, base_url, parser_plugin_id, is_enabled, created_at_epoch_ms, updated_at_epoch_ms) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+clearBackupVideoSourceSite:
+DELETE FROM video_source_site;
+
+backupAppSetting:
+SELECT * FROM app_setting WHERE setting_key LIKE 'source-adblock:%' OR setting_key LIKE 'backup.%' OR setting_key = 'playback:primary-action';
+
+restoreAppSetting:
+INSERT INTO app_setting(setting_key, setting_value, updated_at_epoch_ms) VALUES (?, ?, ?);
+
+clearBackupAppSetting:
+DELETE FROM app_setting WHERE setting_key LIKE 'source-adblock:%' OR setting_key LIKE 'backup.%' OR setting_key = 'playback:primary-action';
+
+backupPreference:
+SELECT setting_value FROM app_setting WHERE setting_key = ?;

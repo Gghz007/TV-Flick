@@ -1,0 +1,410 @@
+CREATE TABLE IF NOT EXISTS content (
+    local_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    media_type TEXT NOT NULL CHECK (media_type IN ('movie', 'tv')),
+    tmdb_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    original_title TEXT,
+    release_year INTEGER,
+    poster_path TEXT,
+    backdrop_path TEXT,
+    overview TEXT,
+    runtime_minutes INTEGER,
+    metadata_updated_at_epoch_ms INTEGER,
+    created_at_epoch_ms INTEGER NOT NULL,
+    updated_at_epoch_ms INTEGER NOT NULL,
+    release_date TEXT,
+    alternative_titles TEXT,
+    genres TEXT,
+    UNIQUE (media_type, tmdb_id)
+);
+
+CREATE TABLE IF NOT EXISTS library_entry (
+    content_id INTEGER NOT NULL PRIMARY KEY REFERENCES content(local_id) ON DELETE CASCADE,
+    is_in_watch_list INTEGER NOT NULL DEFAULT 0 CHECK (is_in_watch_list IN (0, 1)),
+    is_favorite INTEGER NOT NULL DEFAULT 0 CHECK (is_favorite IN (0, 1)),
+    movie_watched_at_epoch_ms INTEGER,
+    movie_position_ms INTEGER,
+    added_at_epoch_ms INTEGER NOT NULL,
+    updated_at_epoch_ms INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS show_season (
+    local_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    show_content_id INTEGER NOT NULL REFERENCES content(local_id) ON DELETE CASCADE,
+    tmdb_season_id INTEGER,
+    season_number INTEGER NOT NULL,
+    name TEXT,
+    air_date TEXT,
+    poster_path TEXT,
+    UNIQUE (show_content_id, season_number)
+);
+
+CREATE TABLE IF NOT EXISTS episode (
+    local_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    season_id INTEGER NOT NULL REFERENCES show_season(local_id) ON DELETE CASCADE,
+    tmdb_episode_id INTEGER,
+    episode_number INTEGER NOT NULL,
+    name TEXT,
+    overview TEXT,
+    air_date TEXT,
+    still_path TEXT,
+    runtime_minutes INTEGER,
+    UNIQUE (season_id, episode_number)
+);
+
+CREATE TABLE IF NOT EXISTS episode_progress (
+    episode_id INTEGER NOT NULL PRIMARY KEY REFERENCES episode(local_id) ON DELETE CASCADE,
+    watched_at_epoch_ms INTEGER,
+    position_ms INTEGER,
+    updated_at_epoch_ms INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS app_setting (
+    setting_key TEXT NOT NULL PRIMARY KEY,
+    setting_value TEXT NOT NULL,
+    updated_at_epoch_ms INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS episode_favorite (
+    episode_id INTEGER NOT NULL PRIMARY KEY REFERENCES episode(local_id) ON DELETE CASCADE
+);
+
+-- User-owned catalogue of sites. A parser is never stored as arbitrary code
+-- in SQLite: parser_plugin_id selects a compiled Source Plugin instead.
+CREATE TABLE IF NOT EXISTS video_source_site (
+    site_id TEXT NOT NULL PRIMARY KEY,
+    display_name TEXT NOT NULL,
+    base_url TEXT NOT NULL UNIQUE,
+    parser_plugin_id TEXT NOT NULL,
+    is_enabled INTEGER NOT NULL DEFAULT 1 CHECK (is_enabled IN (0, 1)),
+    created_at_epoch_ms INTEGER NOT NULL,
+    updated_at_epoch_ms INTEGER NOT NULL
+);
+
+selectLibraryItems:
+SELECT
+    content.local_id,
+    content.media_type,
+    content.tmdb_id,
+    content.title,
+    content.release_year,
+    content.poster_path,
+    content.backdrop_path,
+    library_entry.is_in_watch_list,
+    library_entry.is_favorite,
+    library_entry.movie_watched_at_epoch_ms,
+    library_entry.movie_position_ms,
+    library_entry.added_at_epoch_ms,
+    content.original_title,
+    content.overview,
+    content.runtime_minutes,
+    content.metadata_updated_at_epoch_ms,
+    content.release_date, content.alternative_titles, content.genres
+FROM library_entry
+JOIN content ON content.local_id = library_entry.content_id
+ORDER BY library_entry.added_at_epoch_ms DESC;
+
+selectEpisodesForShow:
+SELECT
+    show_season.season_number,
+    episode.local_id,
+    episode.episode_number,
+    episode.name,
+    episode.air_date,
+    episode.still_path,
+    episode_progress.watched_at_epoch_ms,
+    episode_progress.position_ms,
+    episode.runtime_minutes,
+    COALESCE(episode_favorite.episode_id, 0) AS favorite_episode_id
+FROM show_season
+JOIN episode ON episode.season_id = show_season.local_id
+LEFT JOIN episode_progress ON episode_progress.episode_id = episode.local_id
+LEFT JOIN episode_favorite ON episode_favorite.episode_id = episode.local_id
+WHERE show_season.show_content_id = ?
+ORDER BY show_season.season_number, episode.episode_number;
+
+insertEpisodeFavorite:
+INSERT OR IGNORE INTO episode_favorite(episode_id) VALUES (?);
+
+deleteEpisodeFavorite:
+DELETE FROM episode_favorite WHERE episode_id = ?;
+
+updateSetting:
+UPDATE app_setting
+SET setting_value = ?, updated_at_epoch_ms = ?
+WHERE setting_key = ?;
+
+insertSetting:
+INSERT INTO app_setting(setting_key, setting_value, updated_at_epoch_ms)
+VALUES (?, ?, ?);
+
+selectSourceAdblockSettings:
+SELECT setting_key, setting_value FROM app_setting WHERE setting_key LIKE 'source-adblock:%';
+
+saveSourceAdblockSetting:
+INSERT OR REPLACE INTO app_setting(setting_key, setting_value, updated_at_epoch_ms)
+VALUES (?, ?, ?);
+
+deleteSourceAdblockSetting:
+DELETE FROM app_setting WHERE setting_key = ?;
+
+selectProfileSetting:
+SELECT setting_value FROM app_setting WHERE setting_key = ?;
+
+saveProfileSetting:
+INSERT OR REPLACE INTO app_setting(setting_key, setting_value, updated_at_epoch_ms)
+VALUES (?, ?, ?);
+
+clearLibraryTitles:
+DELETE FROM content;
+
+clearLibraryEntries:
+DELETE FROM library_entry;
+
+clearLibrarySeasons:
+DELETE FROM show_season;
+
+clearLibraryEpisodes:
+DELETE FROM episode;
+
+clearLibraryEpisodeProgress:
+DELETE FROM episode_progress;
+
+clearLibraryEpisodeFavorites:
+DELETE FROM episode_favorite;
+
+clearShowWatchedMarks:
+UPDATE episode_progress SET watched_at_epoch_ms = NULL WHERE watched_at_epoch_ms IS NOT NULL;
+
+clearMovieWatchedMarks:
+UPDATE library_entry SET movie_watched_at_epoch_ms = NULL WHERE movie_watched_at_epoch_ms IS NOT NULL;
+
+selectContentByTmdb:
+SELECT
+    local_id,
+    media_type,
+    tmdb_id,
+    title,
+    original_title,
+    release_year,
+    poster_path,
+    backdrop_path,
+    overview,
+    runtime_minutes,
+    metadata_updated_at_epoch_ms,
+    release_date, alternative_titles, genres
+FROM content
+WHERE media_type = ? AND tmdb_id = ?;
+
+insertContent:
+INSERT INTO content(
+    media_type,
+    tmdb_id,
+    title,
+    original_title,
+    release_year,
+    poster_path,
+    backdrop_path,
+    overview,
+    runtime_minutes,
+    metadata_updated_at_epoch_ms,
+    created_at_epoch_ms,
+    updated_at_epoch_ms,
+    release_date, alternative_titles, genres
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateContentMetadata:
+UPDATE content
+SET
+    title = ?,
+    original_title = ?,
+    release_year = ?,
+    poster_path = ?,
+    backdrop_path = ?,
+    overview = ?,
+    runtime_minutes = ?,
+    metadata_updated_at_epoch_ms = ?,
+    updated_at_epoch_ms = ?,
+    release_date = ?, alternative_titles = ?, genres = ?
+WHERE local_id = ?;
+
+selectContentIdByTmdb:
+SELECT local_id
+FROM content
+WHERE media_type = ? AND tmdb_id = ?;
+
+insertLibraryEntry:
+INSERT INTO library_entry(
+    content_id,
+    is_in_watch_list,
+    is_favorite,
+    movie_watched_at_epoch_ms,
+    movie_position_ms,
+    added_at_epoch_ms,
+    updated_at_epoch_ms
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+selectLibraryEntryState:
+SELECT
+    is_in_watch_list,
+    is_favorite,
+    movie_watched_at_epoch_ms,
+    movie_position_ms,
+    added_at_epoch_ms
+FROM library_entry
+WHERE content_id = ?;
+
+updateLibraryFlags:
+UPDATE library_entry
+SET
+    is_in_watch_list = ?,
+    is_favorite = ?,
+    updated_at_epoch_ms = ?
+WHERE content_id = ?;
+
+updateMovieProgress:
+UPDATE library_entry
+SET
+    movie_watched_at_epoch_ms = ?,
+    movie_position_ms = ?,
+    updated_at_epoch_ms = ?
+WHERE content_id = ?;
+
+selectMoviePlayback:
+SELECT movie_watched_at_epoch_ms, movie_position_ms
+FROM library_entry
+WHERE content_id = ?;
+
+deleteLibraryEntry:
+DELETE FROM library_entry
+WHERE content_id = ?;
+
+selectWatchListItems:
+SELECT
+    content.local_id,
+    content.media_type,
+    content.tmdb_id,
+    content.title,
+    content.release_year,
+    content.poster_path,
+    content.backdrop_path,
+    library_entry.is_in_watch_list,
+    library_entry.is_favorite,
+    library_entry.movie_watched_at_epoch_ms,
+    library_entry.movie_position_ms,
+    library_entry.added_at_epoch_ms,
+    content.original_title,
+    content.overview,
+    content.runtime_minutes,
+    content.metadata_updated_at_epoch_ms,
+    content.release_date, content.alternative_titles, content.genres
+FROM library_entry
+JOIN content ON content.local_id = library_entry.content_id
+WHERE library_entry.is_in_watch_list = 1
+ORDER BY library_entry.added_at_epoch_ms DESC;
+
+selectSeasonId:
+SELECT local_id
+FROM show_season
+WHERE show_content_id = ? AND season_number = ?;
+
+selectSeasonsForShow:
+SELECT show_season.*, COUNT(episode.local_id) AS episode_count
+FROM show_season LEFT JOIN episode ON episode.season_id = show_season.local_id
+WHERE show_content_id = ?
+GROUP BY show_season.local_id ORDER BY season_number;
+
+selectSeasonEpisodes:
+SELECT episode.* FROM episode JOIN show_season ON episode.season_id = show_season.local_id
+WHERE show_season.show_content_id = ? AND show_season.season_number = ?
+ORDER BY episode_number;
+
+insertSeason:
+INSERT INTO show_season(show_content_id, tmdb_season_id, season_number, name, air_date, poster_path)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateSeason:
+UPDATE show_season
+SET tmdb_season_id = ?, name = ?, air_date = ?, poster_path = ?
+WHERE local_id = ?;
+
+selectEpisodeId:
+SELECT local_id
+FROM episode
+WHERE season_id = ? AND episode_number = ?;
+
+insertEpisode:
+INSERT INTO episode(season_id, tmdb_episode_id, episode_number, name, overview, air_date, still_path, runtime_minutes)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateEpisode:
+UPDATE episode
+SET tmdb_episode_id = ?, name = ?, overview = ?, air_date = ?, still_path = ?, runtime_minutes = ?
+WHERE local_id = ?;
+
+selectEpisodeProgress:
+SELECT watched_at_epoch_ms, position_ms
+FROM episode_progress
+WHERE episode_id = ?;
+
+insertEpisodeProgress:
+INSERT INTO episode_progress(episode_id, watched_at_epoch_ms, position_ms, updated_at_epoch_ms)
+VALUES (?, ?, ?, ?);
+
+updateEpisodeProgress:
+UPDATE episode_progress
+SET watched_at_epoch_ms = ?, position_ms = ?, updated_at_epoch_ms = ?
+WHERE episode_id = ?;
+
+selectUpcomingEpisodes:
+SELECT
+    content.local_id AS show_content_id,
+    content.title AS show_title,
+    content.poster_path,
+    show_season.season_number,
+    episode.local_id AS episode_id,
+    episode.episode_number,
+    episode.name AS episode_name,
+    episode.air_date
+FROM library_entry
+JOIN content ON content.local_id = library_entry.content_id
+JOIN show_season ON show_season.show_content_id = content.local_id
+JOIN episode ON episode.season_id = show_season.local_id
+LEFT JOIN episode_progress ON episode_progress.episode_id = episode.local_id
+WHERE library_entry.is_in_watch_list = 1
+  AND content.media_type = 'tv'
+  AND episode.air_date > date('now')
+  AND episode_progress.watched_at_epoch_ms IS NULL
+ORDER BY episode.air_date ASC;
+
+selectVideoSourceSites:
+SELECT site_id, display_name, base_url, parser_plugin_id, is_enabled, created_at_epoch_ms, updated_at_epoch_ms
+FROM video_source_site
+ORDER BY display_name COLLATE NOCASE ASC;
+
+selectVideoSourceSite:
+SELECT site_id, display_name, base_url, parser_plugin_id, is_enabled, created_at_epoch_ms, updated_at_epoch_ms
+FROM video_source_site
+WHERE site_id = ?;
+
+insertVideoSourceSite:
+INSERT INTO video_source_site(site_id, display_name, base_url, parser_plugin_id, is_enabled, created_at_epoch_ms, updated_at_epoch_ms)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateVideoSourceSite:
+UPDATE video_source_site
+SET display_name = ?, base_url = ?, parser_plugin_id = ?, is_enabled = ?, updated_at_epoch_ms = ?
+WHERE site_id = ?;
+
+deleteVideoSourceSite:
+DELETE FROM video_source_site
+WHERE site_id = ?;
+
+selectPlaybackAction:
+SELECT setting_value FROM app_setting WHERE setting_key = 'playback:primary-action';
+
+savePlaybackAction:
+INSERT OR REPLACE INTO app_setting(setting_key, setting_value, updated_at_epoch_ms)
+VALUES ('playback:primary-action', ?, ?);

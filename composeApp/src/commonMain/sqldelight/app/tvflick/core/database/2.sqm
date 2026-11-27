@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS catalog_preview_cache (
+    cache_key TEXT NOT NULL PRIMARY KEY,
+    saved_at INTEGER NOT NULL,
+    payload TEXT NOT NULL
+);
