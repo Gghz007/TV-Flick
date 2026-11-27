@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Map the 100 px Figma icon to the adaptive icon's centered 72 dp masked area. -->
+    <group android:translateX="33.84" android:translateY="35.28" android:scaleX="0.72" android:scaleY="0.72">
+        <path android:fillColor="#FFD9D9D9"
+            android:pathData="M18.6667,18.6667V56H37.8V18.6667H56V0H0V18.6667H18.6667Z" />
+    </group>
+</vector>
