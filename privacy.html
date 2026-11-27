@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How TV Flick handles local library data, Google sign-in, and Google Drive backups.">
+  <title>Privacy Policy | TV Flick</title>
+  <link rel="canonical" href="https://gghz007.github.io/TV-Flick/privacy.html">
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { background: Canvas; color: CanvasText; margin: 0; font: 1rem/1.65 system-ui, -apple-system, sans-serif; }
+    .wrap { width: min(100% - 2.5rem, 47rem); margin-inline: auto; }
+    header { border-bottom: 1px solid GrayText; }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; padding-block: .85rem; }
+    a { color: LinkText; text-underline-offset: .2em; overflow-wrap: anywhere; }
+    :focus-visible { outline: 2px solid currentColor; outline-offset: .24rem; }
+    main { padding-block: clamp(2rem, 5vw, 4rem); }
+    h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 .25rem; letter-spacing: -.045em; }
+    h2 { font-size: 1.25rem; margin-block: 2rem .5rem; }
+    h1, h2 { line-height: 1.25; }
+    p, ul { margin-block: .5rem 1rem; }
+    ul { padding-inline-start: 1.5rem; }
+    li + li { margin-top: .45rem; }
+    code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap" aria-label="Main navigation">
+      <a href="index.html">TV Flick</a>
+      <a href="privacy.html" aria-current="page">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <h1>Privacy Policy</h1>
+    <p>Last updated <time datetime="2026-11-27">November 27, 2026</time></p>
+    <p>This policy covers the official TV Flick apps for Windows and Android and the TV Flick website. The TV Flick project is maintained under the GitHub account Gghz007.</p>
+
+    <h2>Library data on your device</h2>
+    <p>TV Flick stores your library, watch status, progress, favorites, source settings, and app preferences in its local storage. On Windows, the portable library is kept in the <strong>Local Database</strong> folder beside the app. The app’s per-user data folder can also hold caches, recovery backups, and a local crash log. On Android, the app uses Android-managed app storage. Your device’s own backup settings can apply independently.</p>
+    <p>Local exports are saved to the destination you choose. Official builds do not send your library or diagnostic logs to a TV Flick server and do not use advertising trackers or analytics SDKs.</p>
+
+    <h2>Optional Google sign-in</h2>
+    <p>When you connect a Google account, TV Flick requests <code>openid</code>, <code>email</code>, and <code>profile</code> to identify the account. The app reads your name, email address, and profile photo when available to display the connected account. It remembers the associated email address locally to keep backup settings associated with the correct account. The Google sign-in flow is handled by Google. TV Flick does not receive your Google password.</p>
+    <p>Windows stores the sign-in session in your per-user application data using Windows data protection. On Android, Google Play services provides an access token and TV Flick records the connection state locally. Signing out removes the local sign-in session and turns off AutoExport. The remembered account association can remain in local app settings until those settings are cleared.</p>
+
+    <h2>Google Drive backups</h2>
+    <p>The <code>https://www.googleapis.com/auth/drive.appdata</code> scope allows TV Flick to create, list, and read its own backups in the private TV Flick app-data folder in your Google Drive. That scope gives access only to app-specific data. TV Flick cannot read your other Drive files through this permission.</p>
+    <p>A backup can contain your TV Flick library and title metadata, watch history and progress, favorites, source addresses and settings, and optional poster or backdrop images. TV Flick reads the ID, name, and creation time of its own backup files to display the backup list. Backups exclude OAuth tokens, API credentials, and resolved stream URLs. The app transfers backup files directly between your device and Google Drive over HTTPS.</p>
+    <p>You can export manually. If you enable AutoExport, TV Flick checks whether a backup is due on app startup using the interval you selected. It uploads to the connected account when a backup is due. TV Flick can also read a backup you select and restore it to your device.</p>
+
+    <h2>Use and sharing of Google user data</h2>
+    <p>TV Flick uses information received from Google APIs to display the connected account and provide backup and restore. It handles that information and any transfer under the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements. TV Flick does not sell Google user data or use it for advertising, profiling, or training AI models. Google account information and access tokens are kept out of requests to metadata providers, video sources, and external download apps.</p>
+
+    <h2>Other services</h2>
+    <ul>
+      <li>TMDB receives search text, title identifiers, or similar metadata requests when you use catalog features. TV Flick requests posters and other artwork from TMDB’s image service.</li>
+      <li>When you use an external video source, that service may receive requests for the selected title or episode and the related stream. YouTube receives requests when you watch a YouTube trailer. If you choose a compatible external downloader, the app can share the selected media URL and the information needed to start the download.</li>
+      <li>Configured builds can request release information from GitHub or download signed filtering rules from a configured host. The services contacted by your device can see standard network information such as your IP address.</li>
+      <li>This site is hosted on GitHub Pages, where GitHub can log visitor IP addresses for security as described in the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub Privacy Statement</a>.</li>
+    </ul>
+
+    <h2>Retention and deletion</h2>
+    <ul>
+      <li>Local library data and settings stay on your device until you reset or delete them. Use <strong>Settings → Profile → Reset Library</strong> for the listed library data. For a broader local reset, clear TV Flick’s app storage in Android settings or remove the Windows local database and per-user app data while TV Flick is closed. Local exports at destinations you chose are separate files.</li>
+      <li>Stop future cloud backups by switching off AutoExport or signing out. To revoke TV Flick’s authorization, remove it from <a href="https://myaccount.google.com/connections">your Google Account’s connections</a>.</li>
+      <li>Cloud backups remain in your Google Drive until you remove the app data in Drive. To remove them, open Google Drive in a desktop browser and go to <strong>Settings → Manage apps → TV Flick</strong>. Choose the option to delete hidden app data if it is available. <a href="https://developers.google.com/workspace/drive/api/guides/appdata">About the Google Drive app-data folder</a>.</li>
+    </ul>
+
+    <h2>Contact and changes</h2>
+    <p>For privacy or data requests, use the TV Flick support email shown on the Google consent screen. The <a href="https://github.com/Gghz007/TV-Flick/issues">public project issue tracker</a> is available for general questions. Use the support email for account details or other personal information.</p>
+    <p>Changes will appear on this page with a revised date. If the app’s use of Google user data changes materially, we will update the disclosure and request new consent where required.</p>
+  </main>
+</body>
+</html>
