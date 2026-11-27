@@ -18,7 +18,7 @@ TV Flick is a local-first movie and TV library for Windows and Android. Track wh
 | **Search** | Find movies and series through TMDB or browse recommendations, trending, popular, and top-rated titles. |
 | **Profile** | View watch statistics, browse your library and favorites, and filter collections by status. |
 | **Properties** | Add a title to Favorites or Watch List, stop watching, reset progress, or remove a title. The checkmark lets you mark an episode or movie manually. |
-| **Database / AdBlock** | Manage your own authorized sources and the optional request filter for each source. |
+| **Database / AdBlock** | Manage your own authorized sources and the optional request filter for each source (###.com). |
 | **Player** | Play supported MP4 and HLS streams. Choose quality and audio when the source supplies options, change speed, use Picture-in-Picture on Android or Mini Player on Windows. Auto MARK updates the library at 70% of the title’s duration or on completion. |
 | **Download** | Choose audio, then quality when alternatives are available. Windows opens Save As. Android offers compatible download apps. Download in the player uses its current selection. |
 | **Backup** | Export or restore a portable `.tvbackup` or JSON. Export CSV and PDF for reading. Optional Google Drive backup uses TV Flick’s private app folder. AutoExport runs on app startup when due. |
